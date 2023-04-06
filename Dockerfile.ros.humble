@@ -38,9 +38,8 @@ RUN apt-get update && \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
-RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+RUN curl -sSL https://ghproxy.com/https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
 RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
-
 
 # 
 # install development packages
@@ -85,6 +84,7 @@ RUN python3 -m pip install -U \
 # 
 # install OpenCV (with CUDA)
 #
+
 ARG OPENCV_URL=https://nvidia.box.com/shared/static/5v89u6g5rb62fpz4lh0rz531ajo2t5ef.gz
 ARG OPENCV_DEB=OpenCV-4.5.0-aarch64.tar.gz
 
@@ -114,10 +114,11 @@ RUN apt-get update && \
 #            cmake \
 #    && rm -rf /var/lib/apt/lists/* \
 #    && apt-get clean
+ENV http_proxy="http://127.0.0.1:7890"
+ENV https_proxy="http://127.0.0.1:7890"
     
 RUN pip3 install --upgrade --no-cache-dir --verbose cmake   
 RUN cmake --version
-
 
 #
 # remove other versions of Python3
@@ -126,13 +127,13 @@ RUN cmake --version
 RUN apt purge -y python3.9 libpython3.9* || echo "python3.9 not found, skipping removal" && \
     ls -ll /usr/bin/python*
     
-    
 # 
 # download/build ROS from source
 #
 RUN mkdir -p ${ROS_ROOT}/src && \
     cd ${ROS_ROOT} && \
-    
+    unset http_proxy &&\
+    unset https_proxy &&\
     # https://answers.ros.org/question/325245/minimal-ros2-installation/?answer=325249#post-id-325249
     rosinstall_generator --deps --rosdistro ${ROS_DISTRO} ${ROS_PKG} \
 		launch_xml \
@@ -154,6 +155,7 @@ RUN mkdir -p ${ROS_ROOT}/src && \
 		compressed_image_transport \
 		compressed_depth_image_transport \
 		> ros2.${ROS_DISTRO}.${ROS_PKG}.rosinstall && \
+    sed -i 's/github.com/kgithub.com/g' ros2.${ROS_DISTRO}.${ROS_PKG}.rosinstall &&\
     cat ros2.${ROS_DISTRO}.${ROS_PKG}.rosinstall && \
     vcs import src < ros2.${ROS_DISTRO}.${ROS_PKG}.rosinstall && \
     

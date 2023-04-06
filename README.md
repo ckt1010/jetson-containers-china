@@ -1,3 +1,7 @@
+Fork from dusty-nv/jetson-containers.
+Since china has GW so some url we can't access.
+You need: 1. buy a proxy and set http proxy port as 7890
+2. run command bellow
 # Machine Learning Containers for Jetson and JetPack
 
 Hosted on [NVIDIA GPU Cloud](https://ngc.nvidia.com/catalog/containers?orderBy=modifiedDESC&query=L4T&quickFilter=containers&filters=) (NGC) are the following Docker container images for machine learning on Jetson:

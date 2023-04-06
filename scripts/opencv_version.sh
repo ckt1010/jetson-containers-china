@@ -3,7 +3,6 @@
 
 # do this first:
 # source scripts/docker_base.sh
-
 if [ $ARCH = "aarch64" ]; then
 	echo "selecting OpenCV for L4T R$L4T_VERSION..."
 

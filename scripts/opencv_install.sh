@@ -7,6 +7,10 @@ set -e -x
 OPENCV_URL=$1
 OPENCV_DEB=$2
 
+export http_proxy="http://127.0.0.1:7890"
+export https_proxy="http://127.0.0.1:7890"
+export all_proxy="http://127.0.0.1:7890"
+
 echo "OPENCV_URL = $OPENCV_URL"
 echo "OPENCV_DEB = $OPENCV_DEB"
 
@@ -19,9 +23,12 @@ apt-get purge -y '.*opencv.*' || echo "previous OpenCV installation not found"
 # download and extract the deb packages
 mkdir opencv
 cd opencv
+
 wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate ${OPENCV_URL} -O ${OPENCV_DEB}
 tar -xzvf ${OPENCV_DEB}
-
+unset http_proxy
+unset https_proxy
+unset all_proxy
 # install the packages and their dependencies
 dpkg -i --force-depends *.deb
 apt-get update 
